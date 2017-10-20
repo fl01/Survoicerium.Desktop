@@ -1,0 +1,15 @@
+﻿<Window x:Class="Survoicerium.Client.Views.MainView"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:ap="clr-namespace:Survoicerium.Client.AttachedProperties"
+		mc:Ignorable="d"
+		ap:DialogCloser.DialogResult="{Binding DialogResult}"
+        Title="Survoicerium" Height="300" Width="300">
+    <StackPanel>
+		<ComboBox ItemsSource="{Binding Interfaces}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedNetworkInterface, Mode=TwoWay}"/>
+		<Button Command="{Binding StartSnifferCommand}">Start</Button>
+		<Button Command="{Binding ExitAppCommand}">Exit</Button>
+    </StackPanel>
+</Window>

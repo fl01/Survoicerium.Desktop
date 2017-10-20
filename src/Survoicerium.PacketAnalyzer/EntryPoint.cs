@@ -9,6 +9,9 @@ using Survoicerium.PacketAnalyzer.Sniffing;
 
 namespace Survoicerium.PacketAnalyzer
 {
+    /// <summary>
+    /// it is example how to run it as console app
+    /// </summary>
     public class EntryPoint
     {
         private static bool _isStopping;

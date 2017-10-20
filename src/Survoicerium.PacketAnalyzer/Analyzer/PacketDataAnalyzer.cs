@@ -9,7 +9,7 @@ namespace Survoicerium.PacketAnalyzer.Analyzer
     {
         private readonly PacketAnalyzerOptions _options;
         private const int MaxIpLength = 4 * 4;
-        private const int DefaultJoinIpPackageSize = 72;
+        private const int DefaultJoinIpPackageSize = 64;
         private const int IndexOfIp = 35;
         private const int JoinServerPacketIndex = 31;
         private const int TeamIndex = 54;
@@ -40,9 +40,9 @@ namespace Survoicerium.PacketAnalyzer.Analyzer
             if (packet.Data.Length >= DefaultJoinIpPackageSize && packet.Data.Length <= 144 && packet.Data[JoinServerPacketIndex] == JoinServerPacketType)
             {
                 team = packet.Data[TeamIndex];
+                Console.WriteLine($"Team: {team}");
                 if (team == 0x00 || team == 0x01)
                 {
-                    Console.WriteLine($"Team: {team}");
                     var assumedIpData = packet.Data.Skip(IndexOfIp).Take(MaxIpLength).ToArray();
                     var expectedIp = System.Text.ASCIIEncoding.ASCII.GetString(assumedIpData);
                     string ip = Regex.Match(expectedIp, @"([0-9]{1,3}(\.)?){4}", RegexOptions.Compiled).Value;
