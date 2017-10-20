@@ -102,9 +102,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Survoicerium.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Survoicerium.Logging\Survoicerium.Logging.csproj">
       <Project>{ACF1708A-809B-4F36-8EF5-92E969B28681}</Project>
       <Name>Survoicerium.Logging</Name>
