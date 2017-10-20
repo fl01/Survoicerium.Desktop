@@ -6,7 +6,7 @@ namespace Survoicerium.Client.Models
     {
         public NetworkInterfaceInfo Data { get; set; }
 
-        public string Name { get { return Data?.Name; } }
+        public string Name { get { return $"{Data?.Name} - {Data?.IPAddress} - {Data?.Id}"; } }
 
         public NetworkInterfaceModel(NetworkInterfaceInfo info)
         {
