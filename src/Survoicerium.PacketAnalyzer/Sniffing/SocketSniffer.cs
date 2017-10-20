@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Survoicerium.Logging;
 using Survoicerium.PacketAnalyzer.Analyzer;
 using Survoicerium.PacketAnalyzer.Network;
 
@@ -14,34 +15,38 @@ namespace Survoicerium.PacketAnalyzer.Sniffing
         private const int BUFFER_SIZE = 1024 * 64;
         private const int MAX_RECEIVE = 100;
 
-        private bool isStopping;
-        private Socket socket;
+        private bool _isStopping;
+        private Socket _socket;
         private readonly ConcurrentStack<SocketAsyncEventArgs> _receivePool;
         private readonly SemaphoreSlim _maxReceiveEnforcer = new SemaphoreSlim(MAX_RECEIVE, MAX_RECEIVE);
         private readonly BufferManager _bufferManager;
+
+        public ILogger _logger { get; }
+
         private readonly BlockingCollection<TimestampedData> _outputQueue;
         private readonly PacketDataAnalyzer _analyzer;
 
-        public SocketSniffer(NetworkInterfaceInfo nic, PacketDataAnalyzer analyzer)
+        public SocketSniffer(NetworkInterfaceInfo nic, ILogger logger, PacketDataAnalyzer analyzer)
         {
+            _logger = logger;
             _outputQueue = new BlockingCollection<TimestampedData>();
             _analyzer = analyzer;
             _bufferManager = new BufferManager(BUFFER_SIZE, MAX_RECEIVE);
             _receivePool = new ConcurrentStack<SocketAsyncEventArgs>();
 
             // IPv4
-            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
-            this.socket.Bind(new IPEndPoint(nic.IPAddress, 0));
-            this.socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
+            this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
+            this._socket.Bind(new IPEndPoint(nic.IPAddress, 0));
+            this._socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
 
             // Enter promiscuous mode
             try
             {
-                this.socket.IOControl(IOControlCode.ReceiveAll, BitConverter.GetBytes(1), new byte[4]);
+                this._socket.IOControl(IOControlCode.ReceiveAll, BitConverter.GetBytes(1), new byte[4]);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Unable to enter promiscuous mode: {0}", ex);
+                _logger.Log(Severity.Debug, $"Unable to enter promiscuous mode: {ex}");
                 throw;
             }
         }
@@ -77,12 +82,12 @@ namespace Survoicerium.PacketAnalyzer.Sniffing
 
         public void Stop()
         {
-            this.isStopping = true;
+            this._isStopping = true;
         }
 
         private void EnqueueOutput(TimestampedData timestampedData)
         {
-            if (this.isStopping)
+            if (this._isStopping)
             {
                 this._outputQueue.CompleteAdding();
                 return;
@@ -108,7 +113,7 @@ namespace Survoicerium.PacketAnalyzer.Sniffing
 
                 // Returns true if the operation will complete asynchronously, or false if it completed
                 // synchronously
-                bool willRaiseEvent = this.socket.ReceiveAsync(socketEventArgs);
+                bool willRaiseEvent = this._socket.ReceiveAsync(socketEventArgs);
 
                 if (!willRaiseEvent)
                 {
@@ -118,13 +123,13 @@ namespace Survoicerium.PacketAnalyzer.Sniffing
             catch (Exception ex)
             {
                 // Exceptions while shutting down are expected
-                if (!this.isStopping)
+                if (!this._isStopping)
                 {
                     Console.WriteLine(ex);
                 }
 
-                this.socket.Close();
-                this.socket = null;
+                this._socket.Close();
+                this._socket = null;
             }
         }
 
@@ -137,7 +142,7 @@ namespace Survoicerium.PacketAnalyzer.Sniffing
             {
                 if (e.SocketError != SocketError.Success)
                 {
-                    if (!this.isStopping)
+                    if (!this._isStopping)
                     {
                         Console.WriteLine("Socket error: {0}", e.SocketError);
                     }
@@ -156,16 +161,16 @@ namespace Survoicerium.PacketAnalyzer.Sniffing
             }
             catch (SocketException ex)
             {
-                Console.WriteLine("Socket error: {0}", ex);
+                _logger.Log(Severity.Debug, $"Socket error: {ex}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: {0}", ex);
+                _logger.Log(Severity.Debug, $"Error: {ex}");
             }
             finally
             {
                 // Put the SocketAsyncEventArgs back into the pool
-                if (!this.isStopping && this.socket != null && this.socket.IsBound)
+                if (!this._isStopping && this._socket != null && this._socket.IsBound)
                 {
                     this._receivePool.Push(e);
                     this._maxReceiveEnforcer.Release();

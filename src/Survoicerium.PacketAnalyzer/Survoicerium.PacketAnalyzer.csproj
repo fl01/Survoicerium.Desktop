@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Analyzer\PacketAnalyzerOptions.cs" />
     <Compile Include="Analyzer\PacketDataAnalyzer.cs" />
+    <Compile Include="ConsoleLogger.cs" />
     <Compile Include="Sniffing\BufferManager.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Network\NetworkInterfaceInfo.cs" />
@@ -59,6 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Survoicerium.Logging\Survoicerium.Logging.csproj">
+      <Project>{ACF1708A-809B-4F36-8EF5-92E969B28681}</Project>
+      <Name>Survoicerium.Logging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

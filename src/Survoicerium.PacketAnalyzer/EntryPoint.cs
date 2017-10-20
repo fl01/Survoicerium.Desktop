@@ -31,7 +31,7 @@ namespace Survoicerium.PacketAnalyzer
                 FilterByIp = new System.Collections.Generic.List<IPAddress>() { survLoginIp }
             };
 
-            var sniffer = new SocketSniffer(nic, new PacketDataAnalyzer(options));
+            var sniffer = new SocketSniffer(nic, new ConsoleLogger(), new PacketDataAnalyzer(new ConsoleLogger(), options));
             sniffer.Start();
 
             Console.WriteLine();

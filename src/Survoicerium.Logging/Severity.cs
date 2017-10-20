@@ -2,6 +2,7 @@
 {
     public enum Severity
     {
-        Debug
+        Debug,
+        Info
     }
 }

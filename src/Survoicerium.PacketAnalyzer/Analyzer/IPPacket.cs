@@ -52,5 +52,15 @@ namespace Survoicerium.PacketAnalyzer.Analyzer
                 Data = data;
             }
         }
+
+        public string GetHexRepresentation()
+        {
+            if (Data == null || Data.Length == 0)
+            {
+                return null;
+            }
+
+            return BitConverter.ToString(Data).Replace("-", " ");
+        }
     }
 }

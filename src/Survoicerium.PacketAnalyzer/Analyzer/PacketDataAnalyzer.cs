@@ -2,63 +2,86 @@
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using Survoicerium.Logging;
 
 namespace Survoicerium.PacketAnalyzer.Analyzer
 {
     public class PacketDataAnalyzer
     {
-        private readonly PacketAnalyzerOptions _options;
         private const int MaxIpLength = 4 * 4;
-        private const int DefaultJoinIpPackageSize = 64;
+        private const int DefaultJoinIpPackageSize = 45;
         private const int IndexOfIp = 35;
         private const int JoinServerPacketIndex = 31;
         private const int TeamIndex = 54;
         private const int JoinServerPacketType = 130;
 
-        private IPAddress GameServerIp = null;
-        private int team = -1;
-        public PacketDataAnalyzer(PacketAnalyzerOptions options)
+        private readonly PacketAnalyzerOptions _options;
+        private readonly ILogger _logger;
+        private readonly object _analyzePacket = new object();
+
+        private string _gameServerIp = null;
+        private int _team = -1;
+
+        public PacketDataAnalyzer(ILogger logger, PacketAnalyzerOptions options)
         {
             _options = options;
+            _logger = logger;
         }
 
         public void Analyze(IPPacket packet)
         {
-            if (_options.FilterByIp.Any() && !_options.FilterByIp.Contains(packet.SourceAddress))
+            lock (_analyzePacket)
             {
-                if (GameServerIp != null && GameServerIp.Equals(packet.SourceAddress))
+                if (_options.FilterByIp.Any() && !_options.FilterByIp.Contains(packet.SourceAddress))
                 {
-                    Console.WriteLine($"Joined server: {packet.SourceAddress}:{packet.SourcePort} as team {team}");
-                    GameServerIp = null;
-                    team = -1;
+                    // another fucking hack
+                    if (_gameServerIp != null && packet.SourceAddress.ToString().StartsWith(_gameServerIp))
+                    {
+                        if (packet.Data[28] == 0 && packet.Data[29] == 0 && packet.Data[30] == 64 && packet.Data[31] == 220)
+                        {
+                            _logger.Log(Severity.Debug, $"Joined server: {packet.SourceAddress}:{packet.SourcePort} as team {_team}. Packet length {packet.Data.Length}. {packet.GetHexRepresentation()}");
+                            _gameServerIp = null;
+                            _team = -1;
+                        }
+                        else
+                        {
+                            _logger.Log(Severity.Debug, $"Packet doesn't fit 'join server criteria'. Packet length {packet.Data.Length}. {packet.GetHexRepresentation()}");
+                        }
+                    }
+
+                    return;
                 }
 
-                return;
-            }
-
-            //Console.WriteLine($"Received packet from {packet.SourceAddress}. Hex: {BitConverter.ToString(packet.Data).Replace("-", " ")}");
-            if (packet.Data.Length >= DefaultJoinIpPackageSize && packet.Data.Length <= 144 && packet.Data[JoinServerPacketIndex] == JoinServerPacketType)
-            {
-                team = packet.Data[TeamIndex];
-                Console.WriteLine($"Team: {team}");
-                if (team == 0x00 || team == 0x01)
+                //Console.WriteLine($"Received packet from {packet.SourceAddress}. Hex: {BitConverter.ToString(packet.Data).Replace("-", " ")}");
+                if (packet.Data.Length >= DefaultJoinIpPackageSize && packet.Data.Length <= 144)
                 {
-                    var assumedIpData = packet.Data.Skip(IndexOfIp).Take(MaxIpLength).ToArray();
-                    var expectedIp = System.Text.ASCIIEncoding.ASCII.GetString(assumedIpData);
-                    string ip = Regex.Match(expectedIp, @"([0-9]{1,3}(\.)?){4}", RegexOptions.Compiled).Value;
-                    Console.WriteLine(ip);
-                    if (string.IsNullOrEmpty(ip) || !IPAddress.TryParse(ip, out IPAddress address))
+                    if (packet.Data[JoinServerPacketIndex] != JoinServerPacketType)
                     {
-                        Console.WriteLine($"failed to parse ip from string '{expectedIp}'");
+                        _logger.Log(Severity.Debug, $"Packet is in valid range, but join server flag '{packet.Data[JoinServerPacketIndex]}' is invalid. {packet.GetHexRepresentation()}");
+                        return;
+                    }
+
+                    _logger.Log(Severity.Debug, $"Packet is of type 'join server'. {packet.GetHexRepresentation()}");
+
+                    _team = packet.Data[TeamIndex];
+                    if (_team == 0x00 || _team == 0x01)
+                    {
+                        var assumedIpData = packet.Data.Skip(IndexOfIp).Take(MaxIpLength).ToArray();
+                        var expectedIp = System.Text.ASCIIEncoding.ASCII.GetString(assumedIpData);
+                        _gameServerIp = Regex.Match(expectedIp, @"([0-9]{1,3}(\.)?){3}", RegexOptions.Compiled).Value;
+                        if (string.IsNullOrEmpty(_gameServerIp))
+                        {
+                            _logger.Log(Severity.Debug, $"failed to parse ip from string '{expectedIp}'");
+                        }
+                        else
+                        {
+                            _logger.Log(Severity.Debug, $"Game Server Ip: {_gameServerIp}*. Packet length {packet.Data.Length}");
+                        }
                     }
                     else
                     {
-                        GameServerIp = address;
+                        _logger.Log(Severity.Debug, $"Unknown team id {_team}");
                     }
-                }
-                else
-                {
-                    Console.WriteLine($"Unknown team id {team}");
                 }
             }
         }

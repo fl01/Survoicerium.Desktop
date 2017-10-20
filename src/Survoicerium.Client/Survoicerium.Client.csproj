@@ -62,6 +62,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AttachedProperties\DialogCloser.cs" />
+    <Compile Include="Common\CollectionLogger.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\ViewModelBase.cs" />
     <Compile Include="Models\NetworkInterfaceModel.cs" />
@@ -99,6 +100,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\Survoicerium.Logging\Survoicerium.Logging.csproj">
+      <Project>{ACF1708A-809B-4F36-8EF5-92E969B28681}</Project>
+      <Name>Survoicerium.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Survoicerium.PacketAnalyzer\Survoicerium.PacketAnalyzer.csproj">
       <Project>{bcbafe99-9f8e-44e0-bfc4-53b6182b8a86}</Project>
       <Name>Survoicerium.PacketAnalyzer</Name>
