@@ -3,11 +3,11 @@ using Survoicerium.Logging;
 
 namespace Survoicerium.Client.Common
 {
-    public class CollectionLogger : ILogger
+    public class CallbackBasedLogger : ILogger
     {
         private readonly Action<string> _callback;
 
-        public CollectionLogger(Action<string> OnNewItemLogged)
+        public CallbackBasedLogger(Action<string> OnNewItemLogged)
         {
             _callback = OnNewItemLogged;
         }

@@ -61,7 +61,7 @@ namespace Survoicerium.Client.ViewModels
         public MainViewModel(ILogger logger = null)
         {
             _context = SynchronizationContext.Current;
-            _logger = logger ?? new CollectionLogger(LogToUI);
+            _logger = logger ?? new CallbackBasedLogger(LogToUI);
 
             InitializeCommands();
             InitializeNetworkInteraces();

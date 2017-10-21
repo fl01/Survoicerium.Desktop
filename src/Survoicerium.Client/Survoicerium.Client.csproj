@@ -65,7 +65,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AttachedProperties\DialogCloser.cs" />
-    <Compile Include="Common\CollectionLogger.cs" />
+    <Compile Include="Common\CallbackBasedLogger.cs" />
     <Compile Include="Common\FixedSizeQueue.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\ViewModelBase.cs" />
