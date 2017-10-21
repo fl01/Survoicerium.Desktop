@@ -18,7 +18,7 @@ namespace Survoicerium.Client.ViewModels
     {
         private bool? _dialogResult;
         private bool isSniffing = false;
-        private Queue<string> _logs = new Queue<string>();
+        private FixedSizeQueue<string> _logs = new FixedSizeQueue<string>(1000);
         private IPAddress _loginServerIp = null;
         private readonly ILogger _logger;
         private SynchronizationContext _context;
