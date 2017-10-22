@@ -7,6 +7,8 @@ namespace Survoicerium.Client.Common
     {
         private readonly Action<string> _callback;
 
+        public Severity MinLogLevel { get; set; }
+
         public CallbackBasedLogger(Action<string> OnNewItemLogged)
         {
             _callback = OnNewItemLogged;
@@ -14,6 +16,11 @@ namespace Survoicerium.Client.Common
 
         public void Log(Severity severity, string message)
         {
+            if (severity < MinLogLevel)
+            {
+                return;
+            }
+
             string timestampedMessage = $"{DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")} - [{severity}] {message}";
             _callback(timestampedMessage);
         }

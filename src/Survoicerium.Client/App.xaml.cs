@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
 using Survoicerium.Client.ViewModels;
 using Survoicerium.Client.Views;
+using Survoicerium.Logging;
 
 namespace Survoicerium.Client
 {
@@ -10,19 +11,12 @@ namespace Survoicerium.Client
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            // TODO : replace with a proper command args parser
+            var severity = e.Args.Contains("--debug", StringComparer.OrdinalIgnoreCase) ? Severity.Debug : Severity.Info;
+            MainViewModel vm = new MainViewModel() { MinLogLevel = severity };
             base.OnStartup(e);
-            var view = new MainView(new MainViewModel());
+            var view = new MainView(vm);
             view.ShowDialog();
-        }
-
-        public void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            var comException = e.Exception as System.Runtime.InteropServices.COMException;
-
-            if (comException != null && comException.ErrorCode == -2147221040)
-            {
-                e.Handled = true;
-            }
         }
     }
 }

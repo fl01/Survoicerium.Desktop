@@ -58,6 +58,12 @@ namespace Survoicerium.Client.ViewModels
 
         public NetworkInterfaceModel SelectedNetworkInterface { get; set; }
 
+        public Severity MinLogLevel
+        {
+            get { return _logger.MinLogLevel; }
+            set { _logger.MinLogLevel = value; }
+        }
+
         public MainViewModel(ILogger logger = null)
         {
             _context = SynchronizationContext.Current;
