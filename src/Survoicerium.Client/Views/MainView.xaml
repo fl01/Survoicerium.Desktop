@@ -41,7 +41,7 @@
 				VerticalAlignment="Center"
 				Foreground="DarkGray"
 				IsHitTestVisible="False"
-				Text="Enter ApiKey here...">
+				Text="Enter ApiKey here and press OK">
 				<TextBlock.Style>
 					<Style TargetType="{x:Type TextBlock}">
 						<Setter Property="Visibility" Value="Collapsed" />
