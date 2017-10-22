@@ -23,6 +23,7 @@ namespace Survoicerium.Client.ViewModels
         private readonly ILogger _logger;
         private SynchronizationContext _context;
         private SocketSniffer _sniffer = null;
+        private ApiKeyStatus _apiKeyStatus;
 
         public bool? DialogResult
         {
@@ -62,6 +63,12 @@ namespace Survoicerium.Client.ViewModels
         {
             get { return _logger.MinLogLevel; }
             set { _logger.MinLogLevel = value; }
+        }
+
+        public ApiKeyStatus ApiKeyStatus
+        {
+            get { return _apiKeyStatus; }
+            set { Set(ref _apiKeyStatus, value); }
         }
 
         public MainViewModel(ILogger logger = null)

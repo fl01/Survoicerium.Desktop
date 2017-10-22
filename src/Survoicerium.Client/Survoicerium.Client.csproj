@@ -69,6 +69,8 @@
     <Compile Include="Common\FixedSizeQueue.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\ViewModelBase.cs" />
+    <Compile Include="Converters\ApiKeyStatusToVisibilityConverter.cs" />
+    <Compile Include="Models\ApiKeyStatus.cs" />
     <Compile Include="Models\NetworkInterfaceModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
@@ -121,5 +123,6 @@
   <ItemGroup>
     <Resource Include="Survoicerium_logo.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
