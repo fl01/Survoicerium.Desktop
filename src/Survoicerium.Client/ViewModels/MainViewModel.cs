@@ -94,7 +94,7 @@ namespace Survoicerium.Client.ViewModels
 
         private void StopSniffing()
         {
-            _sniffer.Stop();
+            _sniffer?.Stop();
             isSniffing = false;
             _logger.Log(Severity.Info, "Sniffing has been stopped");
         }
