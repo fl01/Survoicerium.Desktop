@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Survoicerium.Client", "Surv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Survoicerium.Logging", "Survoicerium.Logging\Survoicerium.Logging.csproj", "{ACF1708A-809B-4F36-8EF5-92E969B28681}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Survoicerium.ApiClient", "Survoicerium.ApiClient\Survoicerium.ApiClient.csproj", "{615E3556-7AB8-4377-AA1B-54137F9216A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{ACF1708A-809B-4F36-8EF5-92E969B28681}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACF1708A-809B-4F36-8EF5-92E969B28681}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACF1708A-809B-4F36-8EF5-92E969B28681}.Release|Any CPU.Build.0 = Release|Any CPU
+		{615E3556-7AB8-4377-AA1B-54137F9216A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{615E3556-7AB8-4377-AA1B-54137F9216A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{615E3556-7AB8-4377-AA1B-54137F9216A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{615E3556-7AB8-4377-AA1B-54137F9216A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

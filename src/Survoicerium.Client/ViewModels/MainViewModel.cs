@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using Survoicerium.ApiClient;
 using Survoicerium.Client.Common;
 using Survoicerium.Client.Models;
 using Survoicerium.Logging;
@@ -16,11 +17,12 @@ namespace Survoicerium.Client.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private readonly ILogger _logger;
+        private readonly Api _api;
         private bool? _dialogResult;
         private bool isSniffing = false;
         private FixedSizeQueue<string> _logs = new FixedSizeQueue<string>(1000);
         private IPAddress _loginServerIp = null;
-        private readonly ILogger _logger;
         private SynchronizationContext _context;
         private SocketSniffer _sniffer = null;
         private ApiKeyStatus _apiKeyStatus;
@@ -38,6 +40,8 @@ namespace Survoicerium.Client.ViewModels
         }
 
         public ICommand ExitAppCommand { get; set; }
+
+        public ICommand GetApiKeyCommand { get; set; }
 
         public ICommand CopySelectedLogCommand { get; set; }
 
@@ -71,10 +75,11 @@ namespace Survoicerium.Client.ViewModels
             set { Set(ref _apiKeyStatus, value); }
         }
 
-        public MainViewModel(ILogger logger = null)
+        public MainViewModel(Api api, ILogger logger = null)
         {
             _context = SynchronizationContext.Current;
             _logger = logger ?? new CallbackBasedLogger(LogToUI);
+            _api = api;
 
             InitializeCommands();
             InitializeNetworkInteraces();
@@ -97,6 +102,12 @@ namespace Survoicerium.Client.ViewModels
             StartSnifferCommand = new RelayCommand(x => StartSniffing(), x => !isSniffing);
             StopSnifferCommand = new RelayCommand(x => StopSniffing(), x => isSniffing);
             CopySelectedLogCommand = new RelayCommand(x => Clipboard.SetDataObject(SelectedLogRecord), x => true);
+            GetApiKeyCommand = new RelayCommand(x => GetApiKey(), x => true);
+        }
+
+        private void GetApiKey()
+        {
+            _api.GetApiKey(string.Empty);
         }
 
         private void StopSniffing()

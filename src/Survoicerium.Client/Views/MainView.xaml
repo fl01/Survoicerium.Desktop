@@ -33,7 +33,7 @@
 				<ColumnDefinition Width="0.05*" />
 				<ColumnDefinition Width="0.1*" />
 			</Grid.ColumnDefinitions>
-			<Button Grid.Column="0">Get ApiKey</Button>
+			<Button Grid.Column="0" Command="{Binding GetApiKeyCommand}">Get ApiKey</Button>
 			<TextBox x:Name="ApiKey" Grid.Column="1" />
 			<TextBlock
 				Grid.Column="1"
