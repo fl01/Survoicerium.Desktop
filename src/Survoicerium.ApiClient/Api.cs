@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Survoicerium.ApiClient.Http;
+using System.Diagnostics;
 using System.IO;
 
 namespace Survoicerium.ApiClient
@@ -6,10 +7,13 @@ namespace Survoicerium.ApiClient
     public class Api
     {
         private readonly string _baseUrl;
+        private readonly IHttpClient _httpClient;
+        private string _apiKey = null;
 
-        public Api(string baseUrl)
+        public Api(string baseUrl, IHttpClient httpClient = null)
         {
             _baseUrl = baseUrl;
+            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -19,6 +23,12 @@ namespace Survoicerium.ApiClient
         public void GetApiKey(string hardwareId)
         {
             Process.Start(Path.Combine(_baseUrl, "getapikey"));
+        }
+
+        public Api UseApiKey(string key)
+        {
+            _apiKey = key;
+            return this;
         }
     }
 }
