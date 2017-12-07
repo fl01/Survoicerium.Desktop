@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using Survoicerium.ApiClient;
 using Survoicerium.Client.Common;
+using Survoicerium.Client.Configuration;
 using Survoicerium.Client.Models;
 using Survoicerium.Logging;
 using Survoicerium.PacketAnalyzer.Analyzer;
@@ -24,9 +25,11 @@ namespace Survoicerium.Client.ViewModels
         private FixedSizeQueue<string> _logs = new FixedSizeQueue<string>(1000);
         private IPAddress _loginServerIp = null;
         private SynchronizationContext _context;
+        private readonly IConfigurationService _configurationService;
         private SocketSniffer _sniffer = null;
         private ApiKeyStatus _apiKeyStatus;
         private string _apiKey = string.Empty;
+        private bool _isVerifyInProgress = false;
 
         public bool? DialogResult
         {
@@ -84,16 +87,25 @@ namespace Survoicerium.Client.ViewModels
             set { Set(ref _apiKeyStatus, value); }
         }
 
-        public MainViewModel(Api api, ILogger logger = null)
+        public MainViewModel(Api api, IConfigurationService configurationService, ILogger logger = null)
         {
             _context = SynchronizationContext.Current;
+            _configurationService = configurationService;
             _logger = logger ?? new CallbackBasedLogger(LogToUI);
             _api = api;
 
             InitializeCommands();
             InitializeNetworkInteraces();
+            InitializeSettings();
+
+            VerifyApiKey();
 
             _logger.Log(Severity.Info, "Hello world");
+        }
+
+        private void InitializeSettings()
+        {
+            ApiKeyValue = _configurationService.ApiKey;
         }
 
         private void InitializeNetworkInteraces()
@@ -112,13 +124,28 @@ namespace Survoicerium.Client.ViewModels
             StopSnifferCommand = new RelayCommand(x => StopSniffing(), x => isSniffing);
             CopySelectedLogCommand = new RelayCommand(x => Clipboard.SetDataObject(SelectedLogRecord), x => true);
             GetApiKeyCommand = new RelayCommand(x => GetApiKey(), x => true);
-            VerifyApiKeyCommand = new RelayCommand(x => VerifyApiKey(), x => !string.IsNullOrEmpty(ApiKeyValue));
+            VerifyApiKeyCommand = new RelayCommand(x => VerifyApiKey(), x => !_isVerifyInProgress && !string.IsNullOrEmpty(ApiKeyValue));
         }
 
-        private void VerifyApiKey()
+        private async void VerifyApiKey()
         {
-            // TODO: check api key on backend
-            ApiKeyStatus = ApiKeyStatus.Valid;
+            _isVerifyInProgress = true;
+            try
+            {
+                if (await _api.IsApiKeyValidAsync(ApiKeyValue))
+                {
+                    ApiKeyStatus = ApiKeyStatus.Valid;
+                    _configurationService.ApiKey = ApiKeyValue;
+                }
+                else
+                {
+                    ApiKeyStatus = ApiKeyStatus.Invalid;
+                }
+            }
+            finally
+            {
+                _isVerifyInProgress = false;
+            }
         }
 
         private void GetApiKey()

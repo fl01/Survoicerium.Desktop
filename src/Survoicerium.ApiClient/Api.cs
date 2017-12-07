@@ -1,6 +1,8 @@
 ﻿using Survoicerium.ApiClient.Http;
 using System.Diagnostics;
 using System.IO;
+using System;
+using System.Threading.Tasks;
 
 namespace Survoicerium.ApiClient
 {
@@ -29,6 +31,18 @@ namespace Survoicerium.ApiClient
         {
             _apiKey = key;
             return this;
+        }
+
+        public async Task<bool> IsApiKeyValidAsync(string apiKeyValue)
+        {
+            if (string.IsNullOrEmpty(apiKeyValue))
+            {
+                return false;
+            }
+
+
+            // TODO: implement
+            return true;
         }
     }
 }
