@@ -38,7 +38,8 @@
                 x:Name="ApiKey"
                 Grid.Column="1"
                 HorizontalContentAlignment="Center"
-                VerticalContentAlignment="Center" />
+                VerticalContentAlignment="Center"
+                Text="{Binding ApiKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock
                 Grid.Column="1"
                 HorizontalAlignment="Center"
@@ -57,7 +58,7 @@
                     </Style>
                 </TextBlock.Style>
             </TextBlock>
-            <Button Grid.Column="2">OK</Button>
+            <Button Grid.Column="2" Command="{Binding VerifyApiKeyCommand}">OK</Button>
             <Path
                 Grid.Column="3"
                 HorizontalAlignment="Center"

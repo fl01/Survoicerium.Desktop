@@ -26,6 +26,7 @@ namespace Survoicerium.Client.ViewModels
         private SynchronizationContext _context;
         private SocketSniffer _sniffer = null;
         private ApiKeyStatus _apiKeyStatus;
+        private string _apiKey = string.Empty;
 
         public bool? DialogResult
         {
@@ -49,6 +50,8 @@ namespace Survoicerium.Client.ViewModels
 
         public ICommand StopSnifferCommand { get; set; }
 
+        public ICommand VerifyApiKeyCommand { get; set; }
+
         public ObservableCollection<NetworkInterfaceModel> Interfaces { get; set; } = new ObservableCollection<NetworkInterfaceModel>();
 
         public IEnumerable<string> Logs
@@ -60,6 +63,12 @@ namespace Survoicerium.Client.ViewModels
         /// one way, doesn't require onpropertychanged
         /// </summary>
         public string SelectedLogRecord { get; set; }
+
+        public string ApiKeyValue
+        {
+            get { return _apiKey; }
+            set { Set(ref _apiKey, value); }
+        }
 
         public NetworkInterfaceModel SelectedNetworkInterface { get; set; }
 
@@ -103,6 +112,13 @@ namespace Survoicerium.Client.ViewModels
             StopSnifferCommand = new RelayCommand(x => StopSniffing(), x => isSniffing);
             CopySelectedLogCommand = new RelayCommand(x => Clipboard.SetDataObject(SelectedLogRecord), x => true);
             GetApiKeyCommand = new RelayCommand(x => GetApiKey(), x => true);
+            VerifyApiKeyCommand = new RelayCommand(x => VerifyApiKey(), x => !string.IsNullOrEmpty(ApiKeyValue));
+        }
+
+        private void VerifyApiKey()
+        {
+            // TODO: check api key on backend
+            ApiKeyStatus = ApiKeyStatus.Valid;
         }
 
         private void GetApiKey()
