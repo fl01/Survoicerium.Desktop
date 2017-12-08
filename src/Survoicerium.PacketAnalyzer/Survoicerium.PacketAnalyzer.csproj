@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analyzer\JoinedGameArgs.cs" />
     <Compile Include="Analyzer\PacketAnalyzerOptions.cs" />
     <Compile Include="Analyzer\PacketDataAnalyzer.cs" />
     <Compile Include="ConsoleLogger.cs" />

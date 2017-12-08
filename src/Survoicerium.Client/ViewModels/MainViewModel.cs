@@ -27,6 +27,7 @@ namespace Survoicerium.Client.ViewModels
         private SynchronizationContext _context;
         private readonly IConfigurationService _configurationService;
         private SocketSniffer _sniffer = null;
+        private PacketDataAnalyzer _packetDataAnalyzer = null;
         private ApiKeyStatus _apiKeyStatus;
         private string _apiKey = string.Empty;
         private bool _isVerifyInProgress = false;
@@ -132,7 +133,8 @@ namespace Survoicerium.Client.ViewModels
             _isVerifyInProgress = true;
             try
             {
-                if (await _api.IsApiKeyValidAsync(ApiKeyValue))
+                bool isApiKeyValid = await _api.UseApiKey(ApiKeyValue).VerifyApiKeyAsync();
+                if (isApiKeyValid)
                 {
                     ApiKeyStatus = ApiKeyStatus.Valid;
                     _configurationService.ApiKey = ApiKeyValue;
@@ -150,11 +152,17 @@ namespace Survoicerium.Client.ViewModels
 
         private void GetApiKey()
         {
-            _api.GetApiKey(string.Empty);
+            // TODO : send hardware id
+            _api.GetApiKey("new");
         }
 
         private void StopSniffing()
         {
+            if (_packetDataAnalyzer != null)
+            {
+                _packetDataAnalyzer.OnJoinedGame -= OnJoinedGame;
+            }
+
             _sniffer?.Stop();
             isSniffing = false;
             _logger.Log(Severity.Info, "Sniffing has been stopped");
@@ -169,9 +177,16 @@ namespace Survoicerium.Client.ViewModels
                 FilterByIp = new List<IPAddress>() { _loginServerIp }
             };
 
-            _logger.Log(Severity.Info, "Sniffing has been started");
-            _sniffer = new SocketSniffer(SelectedNetworkInterface.Data, _logger, new PacketDataAnalyzer(_logger, options));
+            _logger.Log(Severity.Info, "Sniffer is being loaded...");
+            _packetDataAnalyzer = new PacketDataAnalyzer(_logger, options);
+            _packetDataAnalyzer.OnJoinedGame += OnJoinedGame;
+            _sniffer = new SocketSniffer(SelectedNetworkInterface.Data, _logger, _packetDataAnalyzer);
             _sniffer.Start();
+        }
+
+        private void OnJoinedGame(object sender, JoinedGameArgs args)
+        {
+
         }
 
         private void LogToUI(string message)

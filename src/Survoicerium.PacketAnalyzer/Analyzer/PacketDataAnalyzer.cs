@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Survoicerium.Logging;
 
@@ -19,6 +20,8 @@ namespace Survoicerium.PacketAnalyzer.Analyzer
         private string _gameServerIp = null;
         private int _team = -1;
 
+        public EventHandler<JoinedGameArgs> OnJoinedGame;
+
         public PacketDataAnalyzer(ILogger logger, PacketAnalyzerOptions options)
         {
             _options = options;
@@ -34,8 +37,9 @@ namespace Survoicerium.PacketAnalyzer.Analyzer
                 {
                     if (packet.Data[28] == 0 && packet.Data[29] == 0 && packet.Data[30] == 64 && packet.Data[31] == 220)
                     {
-                        _gameServerIp = null;
                         _logger.Log(Severity.Info, $"Joined server: {packet.SourceAddress}:{packet.SourcePort} as team {_team}. Packet length {packet.Data.Length}. {packet.GetHexRepresentation()}");
+                        OnJoinedGame?.Invoke(this, new JoinedGameArgs(packet.SourceAddress.ToString(), packet.SourcePort, _team));
+                        _gameServerIp = null;
                         _team = -1;
                     }
                 }

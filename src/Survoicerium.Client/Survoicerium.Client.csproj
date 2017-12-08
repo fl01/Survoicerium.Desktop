@@ -110,7 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Survoicerium.ApiClient\Survoicerium.ApiClient.csproj">
-      <Project>{615E3556-7AB8-4377-AA1B-54137F9216A2}</Project>
+      <Project>{B7739221-7355-4297-A8B9-0AB037EA889D}</Project>
       <Name>Survoicerium.ApiClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\Survoicerium.Logging\Survoicerium.Logging.csproj">

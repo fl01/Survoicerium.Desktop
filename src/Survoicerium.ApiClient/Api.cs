@@ -1,8 +1,8 @@
-﻿using Survoicerium.ApiClient.Http;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System;
 using System.Threading.Tasks;
+using Survoicerium.ApiClient.Http;
+using Survoicerium.ApiClient.Models;
 
 namespace Survoicerium.ApiClient
 {
@@ -12,16 +12,12 @@ namespace Survoicerium.ApiClient
         private readonly IHttpClient _httpClient;
         private string _apiKey = null;
 
-        public Api(string baseUrl, IHttpClient httpClient = null)
+        public Api(string baseUrl, IHttpClient httpClient)
         {
             _baseUrl = baseUrl;
             _httpClient = httpClient;
         }
 
-        /// <summary>
-        /// TODO: should we return existing apikey if user with same hardwareid exists on a server ?
-        /// </summary>
-        /// <param name="hardwareId"></param>
         public void GetApiKey(string hardwareId)
         {
             Process.Start(Path.Combine(_baseUrl, "getapikey"));
@@ -30,19 +26,20 @@ namespace Survoicerium.ApiClient
         public Api UseApiKey(string key)
         {
             _apiKey = key;
+            _httpClient.SetCustomHeader("X-ApiKey", key);
             return this;
         }
 
-        public async Task<bool> IsApiKeyValidAsync(string apiKeyValue)
+        public async Task<bool> VerifyApiKeyAsync()
         {
-            if (string.IsNullOrEmpty(apiKeyValue))
+            if (string.IsNullOrEmpty(_apiKey))
             {
                 return false;
             }
 
-
-            // TODO: implement
-            return true;
+            string requestUrl = $"{_baseUrl}/api/me";
+            var result = await _httpClient.GetAsync<User>(requestUrl);
+            return (result?.IsSuccess).GetValueOrDefault();
         }
     }
 }

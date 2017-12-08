@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using Survoicerium.ApiClient;
+using Survoicerium.ApiClient.Http;
 using Survoicerium.Client.Configuration;
 using Survoicerium.Client.ViewModels;
 using Survoicerium.Client.Views;
@@ -16,7 +17,7 @@ namespace Survoicerium.Client
             // TODO : replace with a proper command args parser
             var severity = e.Args.Contains("--debug", StringComparer.OrdinalIgnoreCase) ? Severity.Debug : Severity.Info;
             // TODO : read from config / etc
-            MainViewModel vm = new MainViewModel(new Api("http://localhost:5001"), new ConfigurationService())
+            MainViewModel vm = new MainViewModel(new Api("http://localhost:5000", new RetriableHttpClient(TimeSpan.FromSeconds(5), 5)), new ConfigurationService())
             {
                 MinLogLevel = severity
             };
