@@ -50,6 +50,7 @@
     <Compile Include="Http\IHttpClient.cs" />
     <Compile Include="Http\RetriableHttpClient.cs" />
     <Compile Include="Models\DiscordUser.cs" />
+    <Compile Include="Models\GameInfo.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

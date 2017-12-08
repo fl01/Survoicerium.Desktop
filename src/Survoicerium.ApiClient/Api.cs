@@ -9,18 +9,20 @@ namespace Survoicerium.ApiClient
     public class Api
     {
         private readonly string _baseUrl;
+        private readonly string _frontend;
         private readonly IHttpClient _httpClient;
         private string _apiKey = null;
 
-        public Api(string baseUrl, IHttpClient httpClient)
+        public Api(string backend, string frontend, IHttpClient httpClient)
         {
-            _baseUrl = baseUrl;
+            _baseUrl = backend;
+            _frontend = frontend;
             _httpClient = httpClient;
         }
 
         public void GetApiKey(string hardwareId)
         {
-            Process.Start(Path.Combine(_baseUrl, "getapikey"));
+            Process.Start(Path.Combine(_frontend, "getapikey"));
         }
 
         public Api UseApiKey(string key)
@@ -40,6 +42,11 @@ namespace Survoicerium.ApiClient
             string requestUrl = $"{_baseUrl}/api/me";
             var result = await _httpClient.GetAsync<User>(requestUrl);
             return (result?.IsSuccess).GetValueOrDefault();
+        }
+
+        public async Task RequestToJoinVoiceChannelAsync(string hash)
+        {
+            await _httpClient.PostAsync<GameInfo>(new GameInfo() { Hash = hash }, $"{_baseUrl}/api/game");
         }
     }
 }

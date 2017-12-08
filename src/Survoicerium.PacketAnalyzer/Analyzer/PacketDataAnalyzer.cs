@@ -5,6 +5,9 @@ using Survoicerium.Logging;
 
 namespace Survoicerium.PacketAnalyzer.Analyzer
 {
+    /// <summary>
+    /// TODO : rework this class, too much of hacks
+    /// </summary>
     public class PacketDataAnalyzer
     {
         private const int MaxIpLength = 4 * 4;
@@ -57,7 +60,8 @@ namespace Survoicerium.PacketAnalyzer.Analyzer
 
                 _logger.Log(Severity.Debug, $"Packet is of type 'join server'. {packet.GetHexRepresentation()}");
 
-                _team = packet.Data[TeamIndex];
+                // just a hack, nothing special
+                _team = packet.Data.Length >= TeamIndex ? packet.Data[TeamIndex] : -1;
                 if (_team == 0x00 || _team == 0x01)
                 {
                     var assumedIpData = packet.Data.Skip(IndexOfIp).Take(MaxIpLength).ToArray();

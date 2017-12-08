@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
@@ -184,9 +185,10 @@ namespace Survoicerium.Client.ViewModels
             _sniffer.Start();
         }
 
-        private void OnJoinedGame(object sender, JoinedGameArgs args)
+        private async void OnJoinedGame(object sender, JoinedGameArgs args)
         {
-
+            string hash = Convert.ToBase64String(System.Text.UTF8Encoding.UTF8.GetBytes($"{args.ServerAddress}|{args.ServerPort}|{args.TeamId}"));
+            await _api.RequestToJoinVoiceChannelAsync(hash);
         }
 
         private void LogToUI(string message)
