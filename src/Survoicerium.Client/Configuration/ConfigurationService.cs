@@ -24,6 +24,24 @@ namespace Survoicerium.Client.Configuration
             }
         }
 
+        public string GetBackendExternalAddress()
+        {
+#if DEBUG
+            return "http://localhost:5000";
+#else
+            return "http://api.survarium-voice.party";
+#endif
+        }
+
+        public string GetFrontendExternalAddress()
+        {
+#if DEBUG
+            return "http://localhost:5001";
+#else
+            return "http://survarium-voice.party";
+#endif
+        }
+
         private void UpdateValue(string newValue, [CallerMemberName]string setting = null)
         {
             // probably it is better use something like Set or check if setting exists, but who cares

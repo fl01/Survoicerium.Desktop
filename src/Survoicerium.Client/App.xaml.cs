@@ -14,14 +14,16 @@ namespace Survoicerium.Client
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
+
             // TODO : replace with a proper command args parser
             var severity = e.Args.Contains("--debug", StringComparer.OrdinalIgnoreCase) ? Severity.Debug : Severity.Info;
-            // TODO : read from config / etc
-            MainViewModel vm = new MainViewModel(new Api("http://localhost:5000", "http://localhost:5001", new RetriableHttpClient(TimeSpan.FromSeconds(5), 5)), new ConfigurationService())
+            var cfg = new ConfigurationService();
+            var api = new Api(cfg.GetBackendExternalAddress(), cfg.GetFrontendExternalAddress(), new RetriableHttpClient(TimeSpan.FromSeconds(5), 5));
+            var vm = new MainViewModel(api, cfg)
             {
                 MinLogLevel = severity
             };
-            base.OnStartup(e);
             var view = new MainView(vm);
             view.ShowDialog();
         }
