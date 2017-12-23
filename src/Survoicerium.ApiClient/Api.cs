@@ -22,7 +22,7 @@ namespace Survoicerium.ApiClient
 
         public void GetApiKey(string hardwareId)
         {
-            Process.Start(Path.Combine(_frontend, "getapikey"));
+            Process.Start(Path.Combine(_frontend, "getapikey?state=new"));
         }
 
         public Api UseApiKey(string key)
